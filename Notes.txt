@@ -1,0 +1,10 @@
+làm việc với procedure
++ nối chuối thì dùng hàm concat chứ không cho cộng chuõi
++ ép kiểu từ chuỗi về sô thì dùng cast
++ khai báo biến: 
+	declare flag boolean; đặt sau begin - tương tự biến toàn cục
+	set @max = cast(@maxID as decimal) + 1; - khai báo biến cục bộ
++ tham số in, out, inout
++ câu lệnh not exists (SELECT * FROM giaovien where MAGV = pGVQLCM): kiểm tra tồn tại
++ Gán giá trị cho biến thì phải có: set 
+	
