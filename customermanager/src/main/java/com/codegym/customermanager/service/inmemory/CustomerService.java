@@ -1,13 +1,14 @@
-package com.codegym.customermanager.service;
+package com.codegym.customermanager.service.inmemory;
 
 
 import com.codegym.customermanager.model.Customer;
+import com.codegym.customermanager.service.ICustomerService;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class CustomerService implements ICustomerService{
+public class CustomerService implements ICustomerService {
 
     private List<Customer> customers;
 

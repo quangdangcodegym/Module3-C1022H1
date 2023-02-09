@@ -50,7 +50,7 @@
         </div>
     </c:if>
     <div class="row">
-        <form method="post" class="col-4 offset-3">
+        <form method="post" class="col-4 offset-3" enctype="multipart/form-data">
             <div class="row mt-2">
                 <label class="col-3">Name: </label> <input class="col-9" type="text" name="name" value="${requestScope.customer.getName()}">
             </div>
@@ -62,12 +62,25 @@
                 <label class="col-3">Address: </label> <input class="col-9" type="text" name="address" value="${requestScope.customer.getAddress()}">
             </div>
             <div class="row mt-2">
-                <label class="col-3">Image: </label> <input class="col-9" type="text" name="image" value="${requestScope.customer.getImage()}">
+                <label class="col-3">Image: </label> <input style="padding-left: 0" class="col-9" id="imgInput" type="file" name="image" value="${requestScope.customer.getImage()}">
+            </div>
+            <div class="row mt-2">
+                <img class="col-9 offset-3" id="idImage">
             </div>
             <div class="row mt-2">
                 <button type="submit" class="col-3 offset-3">Create</button>
             </div>
         </form>
+        <script>
+            let imgInput = document.getElementById("imgInput");
+            let idImage = document.getElementById("idImage");
+                imgInput.onchange = evt => {
+                const [file] = imgInput.files
+                if (file) {
+                    idImage.src = URL.createObjectURL(file)
+                }
+            }
+        </script>
     </div>
 </body>
 </html>

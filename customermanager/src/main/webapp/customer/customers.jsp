@@ -64,7 +64,9 @@
                     <td><fmt:formatDate pattern = "dd-MM-yyyy hh:mm"
                                         value = "${c.getCreatedAt()}" /></td>
                     <td>${c.getAddress()}</td>
-                    <td>${c.getImage()}</td>
+                    <td>
+                        <img src="${c.getImage()}" style="width: 50px; height: 50px" >
+                    </td>
                     <td>
                         <c:forEach var="cType" items="${requestScope.customerTypes}">
                             <c:if test="${cType.getId()==c.getIdType()}">

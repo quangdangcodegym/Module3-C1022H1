@@ -1,11 +1,12 @@
-package com.codegym.customermanager.service;
+package com.codegym.customermanager.service.inmemory;
 
 import com.codegym.customermanager.model.CustomerType;
+import com.codegym.customermanager.service.ICustomerTypeService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomerTypeService implements ICustomerTypeService{
+public class CustomerTypeService implements ICustomerTypeService {
     private List<CustomerType> customerTypes;
     @Override
     public List<CustomerType> getAllCustomerTypes() {
