@@ -9,6 +9,7 @@ import com.codegym.customermanager.service.inmemory.CustomerTypeService;
 import com.codegym.customermanager.service.ICustomerService;
 import com.codegym.customermanager.service.ICustomerTypeService;
 import com.codegym.customermanager.service.mysql.MSCustomerService;
+import com.codegym.customermanager.service.mysql.MSCustomerTypeService;
 import com.codegym.customermanager.utils.DateUtils;
 import com.codegym.customermanager.utils.ValidateUtils;
 
@@ -36,7 +37,7 @@ public class CustomerServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         iCustomerService = new MSCustomerService();
-        iCustomerTypeService = new CustomerTypeService();
+        iCustomerTypeService = new MSCustomerTypeService();
     }
 
     @Override
@@ -57,6 +58,9 @@ public class CustomerServlet extends HttpServlet {
             case "delete":
                 showDeleteCustomers(req, resp);
                 break;
+            case "edit":
+                showEditCustomers(req, resp);
+                break;
             default:
                 showCustomers(req, resp);
         }
@@ -64,6 +68,24 @@ public class CustomerServlet extends HttpServlet {
 
 
 //        resp.sendRedirect("/translate");
+    }
+
+    private void showEditCustomers(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<CustomerType> customerTypes = iCustomerTypeService.getAllCustomerTypes();
+        int id = Integer.parseInt(req.getParameter("id"));
+        Customer customer = iCustomerService.findCustomerById((long) id);
+
+        if (customer == null) {
+            resp.sendRedirect("/customers?message=edit");
+        }else{
+
+            req.setAttribute("customer", customer);
+            req.setAttribute("customerTypes", customerTypes);
+            RequestDispatcher requestDispatcher = req.getRequestDispatcher("/customer/edit.jsp");
+            requestDispatcher.forward(req, resp);
+        }
+
+
     }
 
     private void showDeleteCustomers(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -90,6 +112,72 @@ public class CustomerServlet extends HttpServlet {
                 deleteCustomer(req, resp);
                 break;
 
+            case "edit":
+                editCustomer(req, resp);
+                break;
+        }
+    }
+
+    private void editCustomer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<String> errors = new ArrayList<>();
+        Customer customer = new Customer();
+
+        isValidName(req, customer, errors);
+        isValidAddress(req, customer, errors);
+        isValidCustomerType(req, customer, errors);
+        String sCreatedAt = req.getParameter("createdAt");
+        Date createAt = DateUtils.formatDate(sCreatedAt);
+        customer.setCreatedAt(createAt);
+
+//        errors.size()
+
+        List<CustomerType> customerTypes = iCustomerTypeService.getAllCustomerTypes();
+        req.setAttribute("customerTypes", customerTypes);
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/customer/create.jsp");
+        if (errors.size() == 0) {
+            long idCustomer = Long.parseLong(req.getParameter("id"));
+            customer.setId(idCustomer);
+            handleEditImageUpload(req, customer, errors);
+            req.setAttribute("message", "Them thanh cong");
+            iCustomerService.editCustomer(customer);
+
+            resp.sendRedirect("/customers");
+        }else{
+            req.setAttribute("errors", errors);
+            req.setAttribute("customer", customer);
+            requestDispatcher.forward(req, resp);
+        }
+    }
+
+    private void handleEditImageUpload(HttpServletRequest req, Customer customer, List<String> errors) throws ServletException, IOException {
+        for (Part part : req.getParts()) {
+            String fileName = extractFileName(part);
+            // refines the fileName in case it is an absolute path
+            if(!fileName.equals("")){
+                Customer customerDB = iCustomerService.findCustomerById(customer.getId());
+                if (!customerDB.getImage().equals(fileName)) {
+                    String appRealPath = getServletContext().getRealPath("/") + "images";
+                    File file = new File(appRealPath);
+                    if (!file.exists()) {
+                        file.mkdir();
+                    }
+                    String nameFileServer = appRealPath + File.separator + fileName;
+                    System.out.println("Name file server: " + nameFileServer);
+                    part.write(nameFileServer);
+
+
+                    String nameFileProject = "D:\\CODEGYM\\CODEGYM\\Module3\\C1022H1\\customermanager\\src\\main\\webapp\\images" + File.separator + fileName;
+                    System.out.println("Name file project: " + nameFileProject);
+                    part.write(nameFileProject);
+
+                    customer.setImage(fileName);
+                }else{
+                    // lay lai anh cu
+                    customer.setImage(customerDB.getImage());
+                }
+            }
+
+//            part.write();
         }
     }
 
@@ -98,7 +186,7 @@ public class CustomerServlet extends HttpServlet {
         iCustomerService.deleteCustomerById(id);
 
 
-        resp.sendRedirect("/customers?delete=success");
+        resp.sendRedirect("/customers?message=delete");
     }
 
     private void createCustomer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -107,12 +195,15 @@ public class CustomerServlet extends HttpServlet {
 
         isValidName(req, customer, errors);
         isValidAddress(req, customer, errors);
-
+        isValidCustomerType(req, customer, errors);
         String sCreatedAt = req.getParameter("createdAt");
         Date createAt = DateUtils.formatDate(sCreatedAt);
         customer.setCreatedAt(createAt);
+
 //        errors.size()
 
+        List<CustomerType> customerTypes = iCustomerTypeService.getAllCustomerTypes();
+        req.setAttribute("customerTypes", customerTypes);
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/customer/create.jsp");
         if (errors.size() == 0) {
             handleImageUpload(req, customer, errors);
@@ -123,6 +214,21 @@ public class CustomerServlet extends HttpServlet {
             req.setAttribute("errors", errors);
             req.setAttribute("customer", customer);
             requestDispatcher.forward(req, resp);
+        }
+    }
+
+
+
+    private void isValidCustomerType(HttpServletRequest req, Customer customer, List<String> errors) {
+        try {
+            int idCustomerType = Integer.parseInt(req.getParameter("sCustomerType"));
+            if (iCustomerTypeService.getCustomerTypeById(idCustomerType)!=null) {
+                customer.setIdType(idCustomerType);
+            }else{
+                errors.add("Loại khách hàng chưa hợp lệ");
+            }
+        } catch (NumberFormatException numberFormatException) {
+            errors.add("Định dạng loại khách hàng chưa đúng");
         }
     }
 
@@ -145,7 +251,7 @@ public class CustomerServlet extends HttpServlet {
                 System.out.println("Name file project: " + nameFileProject);
                 part.write(nameFileProject);
 
-                customer.setImage(File.separator + "images" + File.separator + fileName);
+                customer.setImage(fileName);
             }
 
 //            part.write();
@@ -166,7 +272,7 @@ public class CustomerServlet extends HttpServlet {
     private void isValidAddress(HttpServletRequest req, Customer customer, List<String> errors) {
         String address = req.getParameter("address");
         if (!ValidateUtils.isAddressValid(address)) {
-            errors.add("Địa chỉ không hợp lệ. Chỉ chứa từ từ 8-15 kí và bắt đầu A-Za-z0-9");
+            errors.add("Địa chỉ không hợp lệ. Chỉ chứa từ từ 5-15 kí và bắt đầu A-Za-z0-9");
         }
         customer.setAddress(address);
     }
@@ -174,12 +280,14 @@ public class CustomerServlet extends HttpServlet {
     private void isValidName(HttpServletRequest req, Customer customer, List<String> errors) {
         String name = req.getParameter("name");
         if (!ValidateUtils.isNameValid(name)) {
-            errors.add("Tên không hợp lệ. Chỉ chứa từ từ 8-15 kí và bắt đầu A-Za-z0-9");
+            errors.add("Tên không hợp lệ. Chỉ chứa từ từ 5-10 kí và bắt đầu A-Za-z0-9");
         }
         customer.setName(name);
     }
 
     private void showCreateCustomers(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<CustomerType> customerTypes = iCustomerTypeService.getAllCustomerTypes();
+        req.setAttribute("customerTypes", customerTypes);
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("customer/create.jsp");
         requestDispatcher.forward(req, resp);
     }
@@ -191,10 +299,10 @@ public class CustomerServlet extends HttpServlet {
         req.setAttribute("customers", customers);
         req.setAttribute("customerTypes", customerTypes );
 
-        String delete = req.getParameter("delete");
-        if (delete != null) {
+        String message = req.getParameter("message");
+        if (message != null) {
             // delete: success
-            req.setAttribute("delete", delete );
+            req.setAttribute("message", message );
         }
 
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/customer/customers.jsp");

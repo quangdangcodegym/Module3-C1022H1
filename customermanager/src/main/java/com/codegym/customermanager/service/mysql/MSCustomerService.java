@@ -11,8 +11,10 @@ public class MSCustomerService implements ICustomerService {
 
 
     private static final String SELLECT_ALL_CUSTOMER = "SELECT * FROM customer";
-    private static final String INSERT_CUSTOMER = "INSERT INTO customer` ( `name`, `createdat`, `address`, `image`) VALUES (?, ?,?, ? )";
+    private static final String INSERT_CUSTOMER = "INSERT INTO `customer` ( `name`, `createdat`, `address`, `image`, `idcustomertype`) VALUES (?, ?,?, ?, ? )";
     private static final String DELETE_CUSTOMER_BY_ID = "DELETE FROM `customer` WHERE (`id` = ?);";
+    private static final String FIND_CUSTOMER_BY_ID = "SELECT * FROM customer where id = ?;";
+    private static final String EDIT_CUSTOMER = "UPDATE `customer` SET `name` = ?, `createdat` = ?, `address` = ?, `image` =?, `idcustomertype` = ? WHERE (`id` = ?)";
     private String jdbcURL = "jdbc:mysql://localhost:3306/c10_qlykhachhang?useSSL=false";
     private String jdbcUsername = "root";
     private String jdbcPassword = "St180729!!";
@@ -20,7 +22,7 @@ public class MSCustomerService implements ICustomerService {
     protected Connection getConnection() {
         Connection connection = null;
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
         } catch (SQLException e) {
             // TODO Auto-generated catch block
@@ -61,8 +63,10 @@ public class MSCustomerService implements ICustomerService {
         java.util.Date uCreatedAt = new java.util.Date(sqlCreatedAt.getTime());
         String address = rs.getString("address");
         String image = rs.getString("image");
+        int idCustomerType = rs.getInt("idcustomertype");
 
         Customer customer = new Customer(id, name, uCreatedAt, address, image);
+        customer.setIdType(idCustomerType);
         return customer;
     }
 
@@ -83,12 +87,47 @@ public class MSCustomerService implements ICustomerService {
     }
     @Override
     public Customer findCustomerById(Long id) {
+
+        Connection connection = getConnection();
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(FIND_CUSTOMER_BY_ID);
+            preparedStatement.setLong(1, id);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                Customer customer = getCustomerFromRs(rs);
+                return customer;
+            }
+
+            connection.close();
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
         return null;
     }
 
     @Override
     public void editCustomer(Customer customer) {
+        Connection connection = getConnection();
 
+        try {
+            //"UPDATE `customer` SET `name` = ?, `createdat` = ?,
+            // `address` = ?, `image` =?, `idcustomertype` = ? WHERE (`id` = ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(EDIT_CUSTOMER);
+            preparedStatement.setString(1, customer.getName());
+            preparedStatement.setDate(2, new java.sql.Date(customer.getCreatedAt().getTime()));
+            preparedStatement.setString(3, customer.getAddress());
+            preparedStatement.setString(4, customer.getImage());
+            preparedStatement.setInt(5, customer.getIdType());
+            preparedStatement.setLong(6, customer.getId());
+
+            preparedStatement.executeUpdate();
+
+            connection.close();
+        } catch (SQLException sqlException) {
+            printSQLException(sqlException);
+        }
     }
 
     @Override
@@ -115,11 +154,12 @@ public class MSCustomerService implements ICustomerService {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_CUSTOMER);
 
-            //"INSERT INTO customer` ( `name`, `createdat`, `address`, `image`) VALUES (?, ?,?, ? )";
+//            "INSERT INTO `customer` ( `name`, `createdat`, `address`, `image`, `idcustomertype`) VALUES (?, ?,?, ?, ? )";
             preparedStatement.setString(1, customer.getName());
-            preparedStatement.setDate(2, (Date) customer.getCreatedAt());
+            preparedStatement.setDate(2, new java.sql.Date(customer.getCreatedAt().getTime()));
             preparedStatement.setString(3, customer.getAddress());
             preparedStatement.setString(4, customer.getImage());
+            preparedStatement.setInt(5, customer.getIdType());
 
             preparedStatement.executeUpdate();
             System.out.println("createCustomer: " + preparedStatement);

@@ -1,0 +1,48 @@
+private void handleImage(HttpServletRequest req, HttpServletResponse resp, Customer customer, List<String> errors) throws ServletException, IOException {
+        for (Part part : req.getParts()) {
+            String fileName = extractFileName(part);
+            fileName = new File(fileName).getName();
+
+            String url = getServletContext().getRealPath("/") + "images";
+            if (!fileName.equals("")) {
+                File folderImages = new File(url);
+                if (!folderImages.exists()) {
+                    folderImages.mkdir();
+                }
+                System.out.println("Real path: " + url);
+                String s1 = url + File.separator + fileName;
+                System.out.println(s1);
+                part.write(s1);
+
+
+                String urlImagesWebapp = "D:\\CODEGYM\\CODEGYM\\Module3\\C1022H1\\customermanager\\src\\main\\webapp\\images";
+                part.write(urlImagesWebapp + File.separator + fileName);
+
+                String customerUrl = File.separator + "images" + File.separator + fileName;
+                System.out.println("Customer url: " + customerUrl);
+                customer.setName(customerUrl);
+            }
+        }
+    }
+
+
+    public File getFolderUpload() {
+            File folderUpload = new File(System.getProperty("user.home") + "/Uploads");
+            if (!folderUpload.exists()) {
+                folderUpload.mkdirs();
+            }
+            return folderUpload;
+        }
+        private String extractFileName(Part part) {
+            String contentDisp = part.getHeader("content-disposition");
+            String[] items = contentDisp.split(";");
+            for (String s : items) {
+                if (s.trim().startsWith("filename")) {
+                    return s.substring(s.indexOf("=") + 2, s.length() - 1);
+                }
+            }
+            return "";
+        }
+
+       Deploy ở chế độ war:  D:\TOMCAT\apache-tomcat-9.0.67\webapps\ROOT\
+       Deploy ở chế độ war exploed:

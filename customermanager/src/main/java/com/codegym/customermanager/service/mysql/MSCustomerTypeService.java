@@ -9,7 +9,7 @@ import java.util.List;
 
 public class MSCustomerTypeService implements ICustomerTypeService {
     private static final String SELLECT_ALL_CUSTOMER_TYPE = "SELECT * FROM customer_type;";
-    private static final String SELECT_CUSTOMER_BY_ID = "SELECT * FROM customer_type where id = ?";
+    private static final String SELECT_CUSTOMER_TYPE_BY_ID = "SELECT * FROM customer_type where id = ?";
     private String jdbcURL = "jdbc:mysql://localhost:3306/c10_qlykhachhang?useSSL=false";
     private String jdbcUsername = "root";
     private String jdbcPassword = "St180729!!";
@@ -19,7 +19,7 @@ public class MSCustomerTypeService implements ICustomerTypeService {
     protected Connection getConnection() {
         Connection connection = null;
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
         } catch (SQLException e) {
             // TODO Auto-generated catch block
@@ -82,14 +82,16 @@ public class MSCustomerTypeService implements ICustomerTypeService {
         try {
 //            PreparedStatement preparedStatement = connection.prepareStatement(SELLECT_ALL_CUSTOMER);
 
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(SELECT_CUSTOMER_BY_ID);
+            PreparedStatement preparedStatement = connection.prepareStatement(SELECT_CUSTOMER_TYPE_BY_ID);
+            preparedStatement.setInt(1, id);
+
+            ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
                 CustomerType c = getCustomerTypeFromRs(rs);
                 return c;
             }
 
-            System.out.println("getCustomerTypeById: " + statement);
+            System.out.println("getCustomerTypeById: " + preparedStatement);
         } catch (SQLException e) {
             printSQLException(e);
         }
