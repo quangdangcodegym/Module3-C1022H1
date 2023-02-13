@@ -15,3 +15,6 @@
 
 <!-- App js -->
 <script src="/assets\js\app.min.js"></script>
+
+<script src="/assets\libs\toastr\toastr.min.js"></script>
+<script src="/assets\js\pages\toastr.init.js"></script>

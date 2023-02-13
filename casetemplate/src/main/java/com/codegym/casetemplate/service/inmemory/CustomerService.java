@@ -64,4 +64,9 @@ public class CustomerService implements ICustomerService {
         customer.setId((long) (customers.size()+1));
         customers.add(customer);
     }
+
+    @Override
+    public boolean checkImageExists(String image) {
+        return false;
+    }
 }

@@ -80,6 +80,7 @@
             </div>
         </form>
         <script>
+            // Chọn ảnh ở thẻ input thì hiện thị preview (xem trước)
             let imgInput = document.getElementById("imgInput");
             let idImage = document.getElementById("idImage");
                 imgInput.onchange = evt => {

@@ -81,7 +81,7 @@ public class CustomerServlet extends HttpServlet {
 
             req.setAttribute("customer", customer);
             req.setAttribute("customerTypes", customerTypes);
-            RequestDispatcher requestDispatcher = req.getRequestDispatcher("/customer/edit.jsp");
+            RequestDispatcher requestDispatcher = req.getRequestDispatcher("dashboard/customer/edit.jsp");
             requestDispatcher.forward(req, resp);
         }
 
@@ -125,6 +125,9 @@ public class CustomerServlet extends HttpServlet {
         isValidName(req, customer, errors);
         isValidAddress(req, customer, errors);
         isValidCustomerType(req, customer, errors);
+
+        Part part = isValidImage(req, customer, errors);
+
         String sCreatedAt = req.getParameter("createdAt");
         Date createAt = DateUtils.formatDate(sCreatedAt);
         customer.setCreatedAt(createAt);
@@ -133,11 +136,16 @@ public class CustomerServlet extends HttpServlet {
 
         List<CustomerType> customerTypes = iCustomerTypeService.getAllCustomerTypes();
         req.setAttribute("customerTypes", customerTypes);
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/customer/create.jsp");
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher("dashboard/customer/edit.jsp");
         if (errors.size() == 0) {
             long idCustomer = Long.parseLong(req.getParameter("id"));
             customer.setId(idCustomer);
-            handleEditImageUpload(req, customer, errors);
+//            handleEditImageUpload(req, customer, errors);
+
+            Customer customerDB = iCustomerService.findCustomerById(customer.getId());
+            if (!customerDB.getImage().equals(customer.getImage())) {
+                handleEditImageUploadAdvanced(part);
+            }
             req.setAttribute("message", "Them thanh cong");
             iCustomerService.editCustomer(customer);
 
@@ -147,6 +155,39 @@ public class CustomerServlet extends HttpServlet {
             req.setAttribute("customer", customer);
             requestDispatcher.forward(req, resp);
         }
+    }
+
+    private void handleEditImageUploadAdvanced(Part part) throws IOException {
+
+        String fileName = extractFileName(part);
+        String appRealPath = getServletContext().getRealPath("/") + "images";
+        File file = new File(appRealPath);
+        if (!file.exists()) {
+            file.mkdir();
+        }
+        String nameFileServer = appRealPath + File.separator + fileName;
+        System.out.println("Name file server: " + nameFileServer);
+        part.write(nameFileServer);
+        String nameFileProject = "D:\\CODEGYM\\CODEGYM\\Module3\\C1022H1\\casetemplate\\src\\main\\webapp\\images" + File.separator + fileName;
+        System.out.println("Name file project: " + nameFileProject);
+        part.write(nameFileProject);
+
+    }
+
+    private Part isValidImage(HttpServletRequest req, Customer customer, List<String> errors) throws ServletException, IOException {
+        for (Part part : req.getParts()) {
+            String fileName = extractFileName(part);
+            customer.setImage(fileName);
+            if(!fileName.equals("")){
+                boolean check = iCustomerService.checkImageExists(fileName);
+                if (check == true) {
+                    return null;
+                }else {
+                    return part;
+                }
+            }
+        }
+        return null;
     }
 
     private void handleEditImageUpload(HttpServletRequest req, Customer customer, List<String> errors) throws ServletException, IOException {
@@ -204,7 +245,7 @@ public class CustomerServlet extends HttpServlet {
 
         List<CustomerType> customerTypes = iCustomerTypeService.getAllCustomerTypes();
         req.setAttribute("customerTypes", customerTypes);
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/customer/create.jsp");
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher("dashboard/customer/create.jsp");
         if (errors.size() == 0) {
             handleImageUpload(req, customer, errors);
             req.setAttribute("message", "Them thanh cong");
@@ -288,7 +329,7 @@ public class CustomerServlet extends HttpServlet {
     private void showCreateCustomers(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<CustomerType> customerTypes = iCustomerTypeService.getAllCustomerTypes();
         req.setAttribute("customerTypes", customerTypes);
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("customer/create.jsp");
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/dashboard/customer/create.jsp");
         requestDispatcher.forward(req, resp);
     }
 

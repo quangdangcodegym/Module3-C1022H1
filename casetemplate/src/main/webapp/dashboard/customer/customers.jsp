@@ -586,6 +586,28 @@
                         <!-- end page title -->
 
                         <div class="row">
+                            <c:if test="${requestScope.message == 'delete'}">
+                                <script>
+                                    window.onload = ()=>{
+                                        Swal.fire(
+                                            'Deleted!',
+                                            'Your file has been deleted.',
+                                            'success'
+                                        )
+                                    }
+                                </script>
+                            </c:if>
+                            <c:if test="${requestScope.message == 'edit'}">
+                                <script>
+                                    window.onload = ()=>{
+                                        Swal.fire(
+                                            'Edit!',
+                                            'Thông tin không hợp lệ.',
+                                            'success'
+                                        )
+                                    }
+                                </script>
+                            </c:if>
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
@@ -625,6 +647,10 @@
 
 
                             </table>
+
+                            <form id="frmDelete" method="post" action="/customers?action=delete">
+                                <input type="hidden" name="idDelete" value="" id="idDelete">
+                            </form>
                         </div>
                         <!-- end row -->
 
@@ -664,5 +690,28 @@
         </jsp:include>
 
     </body>
-
+    <script>
+        function handleDeleteClick(idCustomer) {
+            document.getElementById("idDelete").value = idCustomer;
+            Swal.fire({
+                title: 'Are you sure?',
+                // text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById("frmDelete").submit();
+                    // Swal.fire(
+                    //     'Deleted!',
+                    //     'Your file has been deleted.',
+                    //     'success'
+                    // )
+                }
+            })
+            return false;
+        }
+    </script>
 </html>
