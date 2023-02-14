@@ -10,4 +10,7 @@ public interface IOrderService {
     Order getOrderById(long id);
 
     void saveOrder(Order order);
+
+
+    void saveOrderBySP(Order order);
 }

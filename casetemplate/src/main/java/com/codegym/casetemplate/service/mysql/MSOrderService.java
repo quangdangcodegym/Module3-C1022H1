@@ -2,15 +2,13 @@ package com.codegym.casetemplate.service.mysql;
 
 import com.codegym.casetemplate.model.Order;
 import com.codegym.casetemplate.service.IOrderService;
+import com.google.gson.Gson;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 public class MSOrderService extends DBContext implements IOrderService {
-    private static final String ADD_ORDER_ITEM = "INSERT INTO `c10_qlykhachhang`.`order_item` (`id_order`, `id_product`) VALUES (?, ?)";
+    private static final String ADD_ORDER_ITEM = "INSERT INTO `c10_qlykhachhang`.`order_item` (`id_order`, `id_product`, `quantity`) VALUES (?, ?, ?)";
     String ADD_ORDER = "INSERT INTO `c10_qlykhachhang`.`order` (`address`, `phone`, `name`, `total`) VALUES (?, ?, ?, ?)";
     @Override
     public List<Order> getAllOrder() {
@@ -47,7 +45,11 @@ public class MSOrderService extends DBContext implements IOrderService {
                 PreparedStatement ps = connection.prepareStatement(ADD_ORDER_ITEM);
                 ps.setLong(1, order.getId());
                 ps.setLong(2, order.getOrderItems().get(i).getIdProduct());
+                ps.setInt(3, order.getOrderItems().get(i).getQuantiy());
                 ps.executeUpdate();
+
+//                connection.prepareStatement("INSERT INTO `c10_qlykhachhang`.`order_item` (`id_order`, `id_product`, `quantity`) VALUES ('5', '3', '1')").executeUpdate();
+
             }
             connection.commit();
         } catch (SQLException sqlException) {
@@ -61,5 +63,25 @@ public class MSOrderService extends DBContext implements IOrderService {
 
 
 
+    }
+
+    @Override
+    public void saveOrderBySP(Order order) {
+        Connection connection = getConnection();
+
+        Gson gson = new Gson();
+        String jsonInString = gson.toJson(order);
+        System.out.println(jsonInString);
+        try {
+            CallableStatement callableStatement = connection.prepareCall("call c10_qlykhachhang.spSaveOrderSP(?)");
+            callableStatement.setObject(1, jsonInString);
+
+            callableStatement.executeUpdate();
+
+            connection.close();
+        } catch (SQLException sqlException) {
+            printSQLException(sqlException);
+
+        }
     }
 }

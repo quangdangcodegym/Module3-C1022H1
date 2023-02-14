@@ -204,7 +204,7 @@ public class CartServlet extends HttpServlet {
 
 
             // Tự lưu xuong database đi
-            iOrderService.saveOrder(order);
+            iOrderService.saveOrderBySP(order);
             // xóa thông tin trong session
             session.removeAttribute("order");
             resp.sendRedirect("/");

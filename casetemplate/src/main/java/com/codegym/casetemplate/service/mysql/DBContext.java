@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBContext {
-    protected String jdbcURL = "jdbc:mysql://localhost:3306/c10_qlykhachhang?useSSL=false";
+    protected String jdbcURL = "jdbc:mysql://localhost:3306/c10_qlykhachhang?allowPublicKeyRetrieval=true&useSSL=false";
     protected String jdbcUsername = "root";
     protected String jdbcPassword = "St180729!!";
 
