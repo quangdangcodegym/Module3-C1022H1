@@ -2,7 +2,9 @@ package com.codegym.casetemplate.controller;
 
 import com.codegym.casetemplate.config.ResourceConfig;
 import com.codegym.casetemplate.model.*;
+import com.codegym.casetemplate.service.IOrderService;
 import com.codegym.casetemplate.service.IProductService;
+import com.codegym.casetemplate.service.mysql.MSOrderService;
 import com.codegym.casetemplate.service.mysql.MSProductService;
 
 import javax.servlet.RequestDispatcher;
@@ -21,10 +23,11 @@ import java.util.stream.Collectors;
 @WebServlet(name = "CartServlet", urlPatterns = "/cart")
 public class CartServlet extends HttpServlet {
     private IProductService iProductService;
-
+    private IOrderService iOrderService;
     @Override
     public void init() throws ServletException {
         iProductService = new MSProductService();
+        iOrderService = new MSOrderService();
     }
 
     @Override
@@ -201,7 +204,7 @@ public class CartServlet extends HttpServlet {
 
 
             // Tự lưu xuong database đi
-
+            iOrderService.saveOrder(order);
             // xóa thông tin trong session
             session.removeAttribute("order");
             resp.sendRedirect("/");
