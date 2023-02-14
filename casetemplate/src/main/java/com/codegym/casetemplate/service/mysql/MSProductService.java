@@ -12,6 +12,7 @@ public class MSProductService extends DBContext implements IProductService {
     private static final String SELLECT_ALL_PRODUCT = "SELECT * FROM c10_qlykhachhang.product;";
     private static final String FIND_PRODUCT_BY_ID = "SELECT * FROM c10_qlykhachhang.product where id = ?;";
     private static final String EDIT_PRODUCT = "UPDATE `product` SET `name` = ?, `price` = ?, `description` = ?, `image` = ?, `create_at` = ?, `category_id` = ? WHERE (`id` = ?);";
+    private static final String SELLECT_ALL_PRODUCT_BY_ID = "SELECT * FROM c10_qlykhachhang.product where category_id = ?";
 
     @Override
     public List<Product> getAllProduct() {
@@ -102,5 +103,24 @@ public class MSProductService extends DBContext implements IProductService {
     @Override
     public void createProduct(Product Product) {
 
+    }
+
+    @Override
+    public List<Product> getAllProductByCategoryId(int idCategory) {
+        List<Product> products = new ArrayList<>();
+        Connection connection = getConnection();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(SELLECT_ALL_PRODUCT_BY_ID);
+            preparedStatement.setInt(1, idCategory);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                Product c = getProductFromRs(rs);
+                products.add(c);
+            }
+            connection.close();
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+        return products;
     }
 }

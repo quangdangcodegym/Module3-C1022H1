@@ -13,4 +13,9 @@ public interface IProductService {
     void deleteProductById(Long id);
 
     void createProduct(Product Product);
+
+
+    List<Product> getAllProductByCategoryId(int idCategory);
+
+
 }

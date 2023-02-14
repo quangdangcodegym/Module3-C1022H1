@@ -2,6 +2,7 @@ package com.codegym.casetemplate.controller;
 
 
 
+import com.codegym.casetemplate.config.ResourceConfig;
 import com.codegym.casetemplate.model.Customer;
 import com.codegym.casetemplate.model.CustomerType;
 import com.codegym.casetemplate.service.inmemory.CustomerService;
@@ -81,7 +82,7 @@ public class CustomerServlet extends HttpServlet {
 
             req.setAttribute("customer", customer);
             req.setAttribute("customerTypes", customerTypes);
-            RequestDispatcher requestDispatcher = req.getRequestDispatcher("dashboard/customer/edit.jsp");
+            RequestDispatcher requestDispatcher = req.getRequestDispatcher(ResourceConfig.folderDashboard + "customer/edit.jsp");
             requestDispatcher.forward(req, resp);
         }
 
@@ -93,7 +94,7 @@ public class CustomerServlet extends HttpServlet {
         Customer customer = iCustomerService.findCustomerById(id);
 
         req.setAttribute("customer", customer);
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("customer/delete.jsp");
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher(ResourceConfig.folderDashboard + "customer/delete.jsp");
         requestDispatcher.forward(req, resp);
     }
 
@@ -136,7 +137,7 @@ public class CustomerServlet extends HttpServlet {
 
         List<CustomerType> customerTypes = iCustomerTypeService.getAllCustomerTypes();
         req.setAttribute("customerTypes", customerTypes);
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("dashboard/customer/edit.jsp");
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher(ResourceConfig.folderDashboard + "customer/edit.jsp");
         if (errors.size() == 0) {
             long idCustomer = Long.parseLong(req.getParameter("id"));
             customer.setId(idCustomer);
@@ -168,7 +169,7 @@ public class CustomerServlet extends HttpServlet {
         String nameFileServer = appRealPath + File.separator + fileName;
         System.out.println("Name file server: " + nameFileServer);
         part.write(nameFileServer);
-        String nameFileProject = "D:\\CODEGYM\\CODEGYM\\Module3\\C1022H1\\casetemplate\\src\\main\\webapp\\images" + File.separator + fileName;
+        String nameFileProject = ResourceConfig.folderImageUrlProject + File.separator + fileName;
         System.out.println("Name file project: " + nameFileProject);
         part.write(nameFileProject);
 
@@ -207,7 +208,7 @@ public class CustomerServlet extends HttpServlet {
                     part.write(nameFileServer);
 
 
-                    String nameFileProject = "D:\\CODEGYM\\CODEGYM\\Module3\\C1022H1\\casetemplate\\src\\main\\webapp\\images" + File.separator + fileName;
+                    String nameFileProject = ResourceConfig.folderImageUrlProject + File.separator + fileName;
                     System.out.println("Name file project: " + nameFileProject);
                     part.write(nameFileProject);
 
@@ -245,7 +246,7 @@ public class CustomerServlet extends HttpServlet {
 
         List<CustomerType> customerTypes = iCustomerTypeService.getAllCustomerTypes();
         req.setAttribute("customerTypes", customerTypes);
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("dashboard/customer/create.jsp");
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher(ResourceConfig.folderDashboard + "customer/create.jsp");
         if (errors.size() == 0) {
             handleImageUpload(req, customer, errors);
             req.setAttribute("message", "Them thanh cong");
@@ -288,7 +289,7 @@ public class CustomerServlet extends HttpServlet {
                 part.write(nameFileServer);
 
 
-                String nameFileProject = "D:\\CODEGYM\\CODEGYM\\Module3\\C1022H1\\casetemplate\\src\\main\\webapp\\images" + File.separator + fileName;
+                String nameFileProject = ResourceConfig.folderImageUrlProject + File.separator + fileName;
                 System.out.println("Name file project: " + nameFileProject);
                 part.write(nameFileProject);
 
@@ -329,7 +330,7 @@ public class CustomerServlet extends HttpServlet {
     private void showCreateCustomers(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<CustomerType> customerTypes = iCustomerTypeService.getAllCustomerTypes();
         req.setAttribute("customerTypes", customerTypes);
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/dashboard/customer/create.jsp");
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher(ResourceConfig.folderDashboard  + "customer/create.jsp");
         requestDispatcher.forward(req, resp);
     }
 
@@ -346,7 +347,7 @@ public class CustomerServlet extends HttpServlet {
             req.setAttribute("message", message );
         }
 
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/dashboard/customer/customers.jsp");
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher(ResourceConfig.folderDashboard + "customer/customers.jsp");
         requestDispatcher.forward(req, resp);
     }
 }
