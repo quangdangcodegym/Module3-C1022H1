@@ -205,6 +205,114 @@ LOCK TABLES `user` WRITE;
 INSERT INTO `user` VALUES (1,'quangdang',1,'Quang Dang','123123');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'c10_qlykhachhang'
+--
+/*!50003 DROP PROCEDURE IF EXISTS `spSaveOrderSP` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spSaveOrderSP`(
+	IN order_data JSON
+)
+BEGIN
+	DECLARE i INT DEFAULT 0;
+    DECLARE `_rollback` BOOL DEFAULT 0;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
+    START TRANSACTION;
+	SET @sName = JSON_EXTRACT(order_data, '$.name');
+	SET @sPhone = JSON_EXTRACT(order_data, '$.phone');
+	SET @sAddress = JSON_EXTRACT(order_data, '$.address');
+	SET @sTotal = JSON_EXTRACT(order_data, '$.total');
+	SET @sOrderItems = JSON_EXTRACT(order_data, '$.orderItems');
+        
+	INSERT INTO `c10_qlykhachhang`.`order` (`address`, `phone`, `name`, `total`) VALUES (@sAddress, @sPhone, @sName, @sTotal);
+
+	SET @last_OrderId = LAST_INSERT_ID();
+	SET @sOrderItems_Length = JSON_LENGTH(@sOrderItems);
+    WHILE i < @sOrderItems_Length DO
+		SET @idProduct = JSON_EXTRACT(order_data, CONCAT('$.orderItems[',i,'].idProduct'));
+        SET @quantiy = JSON_EXTRACT(order_data, CONCAT('$.orderItems[',i,'].quantiy'));
+		INSERT INTO `c10_qlykhachhang`.`order_item` (`id_order`, `id_product`, `quantity`) VALUES (@last_OrderId, @idProduct , @quantiy);
+		SET i = i+1;
+    END WHILE;
+    
+    -- INSERT INTO `c10_qlykhachhang`.`order_item` (`id_order`, `id_product`, `quantity`) VALUES ('9', '3', '1');
+
+    
+    IF `_rollback` THEN
+        ROLLBACK;
+    ELSE
+        COMMIT;
+    END IF;
+    
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `spSaveOrderWithParameter` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spSaveOrderWithParameter`(
+	IN order_data JSON,
+    OUT sOutput boolean
+)
+BEGIN
+	DECLARE i INT DEFAULT 0;
+    DECLARE `_rollback` BOOL DEFAULT 0;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
+    
+    set sOutput = true;
+    START TRANSACTION;
+	SET @sName = JSON_EXTRACT(order_data, '$.name');
+	SET @sPhone = JSON_EXTRACT(order_data, '$.phone');
+	SET @sAddress = JSON_EXTRACT(order_data, '$.address');
+	SET @sTotal = JSON_EXTRACT(order_data, '$.total');
+	SET @sOrderItems = JSON_EXTRACT(order_data, '$.orderItems');
+        
+	INSERT INTO `c10_qlykhachhang`.`order` (`address`, `phone`, `name`, `total`) VALUES (@sAddress, @sPhone, @sName, @sTotal);
+
+	SET @last_OrderId = LAST_INSERT_ID();
+	SET @sOrderItems_Length = JSON_LENGTH(@sOrderItems);
+    WHILE i < @sOrderItems_Length DO
+		SET @idProduct = JSON_EXTRACT(order_data, CONCAT('$.orderItems[',i,'].idProduct'));
+        SET @quantiy = JSON_EXTRACT(order_data, CONCAT('$.orderItems[',i,'].quantiy'));
+		INSERT INTO `c10_qlykhachhang`.`order_item` (`id_order`, `id_product`, `quantity`) VALUES (@last_OrderId, @idProduct , @quantiy);
+		SET i = i+1;
+    END WHILE;
+    
+	  -- INSERT INTO `c10_qlykhachhang`.`order_item` (`id_order`, `id_product`, `quantity`) VALUES ('9', '3', '1');
+
+    
+    IF `_rollback` THEN
+		set sOutput = false;
+        ROLLBACK;
+    ELSE
+        COMMIT;
+    END IF;
+    
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -215,4 +323,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-02-15 16:27:50
+-- Dump completed on 2023-02-15 16:39:45
