@@ -705,7 +705,7 @@
                                                     <div class="col-lg-3">
                                                         <div class="single_product">
                                                             <div class="product_thumb">
-                                                                <a href="single-product.html"><img src="/frontend/assets\img\product\product1.jpg" alt=""></a>
+                                                                <a href="single-product.html"><img src="/images/${phone.getImage()}" alt=""></a>
                                                                 <div class="img_icone">
                                                                     <img src="/frontend/assets\img\cart\span-new.png" alt="">
                                                                 </div>

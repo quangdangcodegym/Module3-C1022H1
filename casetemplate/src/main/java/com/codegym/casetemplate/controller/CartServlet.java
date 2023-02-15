@@ -104,13 +104,24 @@ public class CartServlet extends HttpServlet {
                 order.getOrderItems().add(orderItem);
             }
         }
-
+        updateTotalInOrder(order);
         session.setAttribute("order", order);
         req.setAttribute("orderDTO", convertToOrderDTO(order));
 
 //        orderDTO.getOderItemDTOS()
         RequestDispatcher requestDispatcher = req.getRequestDispatcher(ResourceConfig.folderFrontEnd + "cart.jsp");
         requestDispatcher.forward(req, resp);
+    }
+
+    private void updateTotalInOrder(Order order) {
+        double total = 0;
+        if (order != null && order.getOrderItems() != null) {
+            for (int i = 0; i < order.getOrderItems().size(); i++) {
+                Product product = iProductService.findProductById(order.getOrderItems().get(i).getIdProduct());
+                total += order.getOrderItems().get(i).getQuantiy() * product.getPrice();
+            }
+        }
+        order.setTotal(total);
     }
 
     public OrderDTO convertToOrderDTO(Order order) {
@@ -141,6 +152,7 @@ public class CartServlet extends HttpServlet {
                 return orderItemDTO;
             }
         }).collect(Collectors.toList());
+        orderDTO.setTotal(order.getTotal());
         orderDTO.setOderItemDTOS(orderItemDTOS);
         return orderDTO;
     }
@@ -223,6 +235,7 @@ public class CartServlet extends HttpServlet {
         // Nếu có ton tại
         if (checkIdProductExistInOrder(order, idProduct)) {
             setQuantityInOrder(order, idProduct, quantity);
+            updateTotalInOrder(order);
             session.setAttribute("order", order);
 
             req.setAttribute("orderDTO", convertToOrderDTO(order));

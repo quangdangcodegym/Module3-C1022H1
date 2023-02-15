@@ -525,35 +525,19 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <td> Handbag  fringilla <strong> × 2</strong></td>
-                                                                <td> $165.00</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>  Handbag  justo	 <strong> × 2</strong></td>
-                                                                <td> $50.00</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>  Handbag elit	<strong> × 2</strong></td>
-                                                                <td> $50.00</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td> Handbag Rutrum	 <strong> × 1</strong></td>
-                                                                <td> $50.00</td>
-                                                            </tr>
+                                                            <c:forEach items="${requestScope.orderDTO.getOderItemDTOS()}" var="oderItemDTO">
+                                                                <tr>
+                                                                    <td> ${oderItemDTO.getProduct().getName()} <strong> × ${oderItemDTO.getQuantity()}</strong></td>
+                                                                    <td> ${oderItemDTO.getProduct().getPrice()*oderItemDTO.getQuantity()}</td>
+                                                                </tr>
+                                                            </c:forEach>
+
                                                         </tbody>
                                                         <tfoot>
-                                                            <tr>
-                                                                <th>Cart Subtotal</th>
-                                                                <td>$215.00</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>Shipping</th>
-                                                                <td><strong>$5.00</strong></td>
-                                                            </tr>
+
                                                             <tr class="order_total">
                                                                 <th>Order Total</th>
-                                                                <td><strong>$220.00</strong></td>
+                                                                <td><strong>${requestScope.orderDTO.getTotal()}</strong></td>
                                                             </tr>
                                                         </tfoot>
                                                     </table>     

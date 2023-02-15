@@ -48,7 +48,7 @@ public class MSOrderService extends DBContext implements IOrderService {
                 ps.setInt(3, order.getOrderItems().get(i).getQuantiy());
                 ps.executeUpdate();
 
-//                connection.prepareStatement("INSERT INTO `c10_qlykhachhang`.`order_item` (`id_order`, `id_product`, `quantity`) VALUES ('5', '3', '1')").executeUpdate();
+                connection.prepareStatement("INSERT INTO `c10_qlykhachhang`.`order_item` (`id_order`, `id_product`, `quantity`) VALUES ('21', '3', '1')").executeUpdate();
 
             }
             connection.commit();
@@ -60,13 +60,12 @@ public class MSOrderService extends DBContext implements IOrderService {
                 throw new RuntimeException(e);
             }
         }
-
-
-
     }
 
     @Override
     public void saveOrderBySP(Order order) {
+        /**
+//         Thực thi gọi procedure không có tham số
         Connection connection = getConnection();
 
         Gson gson = new Gson();
@@ -83,5 +82,36 @@ public class MSOrderService extends DBContext implements IOrderService {
             printSQLException(sqlException);
 
         }
+         **/
+
+        // Gọi procedure có tham số
+        saveOrderBySPWithParameter(order);
     }
+
+    public void saveOrderBySPWithParameter(Order order) {
+        Connection connection = getConnection();
+
+        Gson gson = new Gson();
+        String jsonInString = gson.toJson(order);
+        System.out.println(jsonInString);
+        try {
+            CallableStatement callableStatement = connection.prepareCall("call c10_qlykhachhang.spSaveOrderWithParameter(?, ?)");
+            callableStatement.setObject(1, jsonInString);
+            callableStatement.registerOutParameter(2, Types.BOOLEAN);
+
+
+            callableStatement.executeUpdate();
+            boolean sOutput = callableStatement.getBoolean(2);
+
+            System.out.println("Kết quả thực thi với Procedure: " + sOutput);
+            connection.close();
+        } catch (SQLException sqlException) {
+            printSQLException(sqlException);
+
+        }
+    }
+
+
+
+
 }
