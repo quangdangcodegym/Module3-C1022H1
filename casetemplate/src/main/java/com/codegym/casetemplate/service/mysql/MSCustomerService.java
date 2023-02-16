@@ -17,6 +17,19 @@ public class MSCustomerService extends DBContext implements ICustomerService {
     private static final String EDIT_CUSTOMER = "UPDATE `customer` SET `name` = ?, `createdat` = ?, `address` = ?, `image` =?, `idcustomertype` = ? WHERE (`id` = ?)";
     private static final String CHECK_IMAGE_EXIST = "SELECT * FROM c10_qlykhachhang.customer where image = ?;";
 
+//
+    private static final String SEARCHING_PAGGING_CUSTOMER = "SELECT SQL_CALC_FOUND_ROWS  * FROM customer where `name` like ? and idcustomertype = ?  limit ?, ?";
+    private static final String SEARCHING_PAGGING_CUSTOMER_ALL = "SELECT SQL_CALC_FOUND_ROWS  * FROM customer where `name` like ? limit ?, ?;";
+
+    private int noOfRecords;
+
+    public int getNoOfRecords() {
+        return noOfRecords;
+    }
+
+    public void setNoOfRecords(int noOfRecords) {
+        this.noOfRecords = noOfRecords;
+    }
 
     @Override
     public List<Customer> getAllCustomer() {
@@ -161,5 +174,41 @@ public class MSCustomerService extends DBContext implements ICustomerService {
             printSQLException(e);
         }
         return false;
+    }
+
+    @Override
+    public List<Customer> getAllCustomerSearchingPagging(String kw, int idCustomerType, int offset, int limit) {
+        List<Customer> customers = new ArrayList<>();
+        Connection connection = getConnection();
+
+        try {
+            PreparedStatement preparedStatement = null;
+            if (idCustomerType == -1) {
+                preparedStatement = connection.prepareStatement(SEARCHING_PAGGING_CUSTOMER_ALL);
+                preparedStatement.setString(1, "%" + kw + "%");
+                preparedStatement.setInt(2, offset);
+                preparedStatement.setInt(3, limit);
+            }else{
+                preparedStatement = connection.prepareStatement(SEARCHING_PAGGING_CUSTOMER);
+                preparedStatement.setString(1, "%" + kw + "%");
+                preparedStatement.setInt(2, idCustomerType);
+                preparedStatement.setInt(3, offset);
+                preparedStatement.setInt(4, limit);
+            }
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                Customer c = getCustomerFromRs(rs);
+                customers.add(c);
+            }
+
+            rs = preparedStatement.executeQuery("SELECT FOUND_ROWS()");
+            while (rs.next()) {
+                noOfRecords = rs.getInt(1);
+            }
+            connection.close();
+        } catch (SQLException sqlException) {
+            printSQLException(sqlException);
+        }
+        return customers;
     }
 }

@@ -15,4 +15,11 @@ public interface ICustomerService {
     void createCustomer(Customer customer);
 
     boolean checkImageExists(String image);
+
+    List<Customer> getAllCustomerSearchingPagging(String kw, int idCustomerType, int offset, int limit);
+
+
+    int getNoOfRecords();
+    void setNoOfRecords(int noOfRecords);
+
 }

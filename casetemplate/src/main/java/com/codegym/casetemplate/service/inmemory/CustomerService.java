@@ -69,4 +69,19 @@ public class CustomerService implements ICustomerService {
     public boolean checkImageExists(String image) {
         return false;
     }
+
+    @Override
+    public List<Customer> getAllCustomerSearchingPagging(String kw, int idCustomerType, int page, int limit) {
+        return null;
+    }
+
+    @Override
+    public int getNoOfRecords() {
+        return 0;
+    }
+
+    @Override
+    public void setNoOfRecords(int noOfRecords) {
+
+    }
 }

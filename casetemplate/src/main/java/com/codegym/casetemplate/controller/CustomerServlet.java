@@ -144,8 +144,11 @@ public class CustomerServlet extends HttpServlet {
 //            handleEditImageUpload(req, customer, errors);
 
             Customer customerDB = iCustomerService.findCustomerById(customer.getId());
-            if (!customerDB.getImage().equals(customer.getImage())) {
-                handleEditImageUploadAdvanced(part);
+
+            if ( customer.getImage()!=null) {
+                if(customerDB.getImage() != null && !customerDB.getImage().equals(customer.getImage()) && part != null){
+                    handleEditImageUploadAdvanced(part);
+                }
             }
             req.setAttribute("message", "Them thanh cong");
             iCustomerService.editCustomer(customer);
@@ -178,8 +181,8 @@ public class CustomerServlet extends HttpServlet {
     private Part isValidImage(HttpServletRequest req, Customer customer, List<String> errors) throws ServletException, IOException {
         for (Part part : req.getParts()) {
             String fileName = extractFileName(part);
-            customer.setImage(fileName);
             if(!fileName.equals("")){
+                customer.setImage(fileName);
                 boolean check = iCustomerService.checkImageExists(fileName);
                 if (check == true) {
                     return null;
@@ -335,11 +338,41 @@ public class CustomerServlet extends HttpServlet {
     }
 
     private void showCustomers(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Customer> customers = iCustomerService.getAllCustomer();
+        String kw = "";
+        if (req.getParameter("kw") != null) {
+            kw = req.getParameter("kw");
+        }
+        int idCustomerType = -1;
+        if (req.getParameter("ct") != null && !req.getParameter("ct").equals("")) {
+            idCustomerType = Integer.parseInt(req.getParameter("ct"));
+        }
+        int page = 1;
+        if (req.getParameter("page") != null && !req.getParameter("page").equals("")) {
+            page = Integer.parseInt(req.getParameter("page"));
+        }
+        int limit = 2;
+        if (req.getParameter("limit") != null && !req.getParameter("limit").equals("")) {
+            limit = Integer.parseInt(req.getParameter("limit"));
+        }
+
+
+
+        List<Customer> customers = iCustomerService.getAllCustomerSearchingPagging(kw,idCustomerType,  (page-1)*limit, limit);
         List<CustomerType> customerTypes = iCustomerTypeService.getAllCustomerTypes();
+
+
+        int noOfRecords = iCustomerService.getNoOfRecords();
+        int noOfPages = (int) Math.ceil(noOfRecords * 1.0 / limit);
+
+
 //        customers.size()
         req.setAttribute("customers", customers);
         req.setAttribute("customerTypes", customerTypes );
+        req.setAttribute("kw", kw);
+        req.setAttribute("ct", idCustomerType);
+
+        req.setAttribute("currentPage", page);
+        req.setAttribute("noOfPages", noOfPages);
 
         String message = req.getParameter("message");
         if (message != null) {

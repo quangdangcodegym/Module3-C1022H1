@@ -18,7 +18,14 @@ public class User {
     private String password;
     private int roleId;
     public User(long id) {
-        User a = new User();
-//        a.setId(id).setName("Quang");
+//        User a = new User();
+//        a.setId(1L);
+//        a.setName("Quang");
+//        a.setPassword("12312");
+//
+//
+//        a.setId(1L).setName("Quang").
+//                setPassword("1231");
+//        getPassword()
     }
 }

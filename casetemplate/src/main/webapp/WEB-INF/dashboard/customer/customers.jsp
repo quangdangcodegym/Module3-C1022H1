@@ -584,7 +584,20 @@
                             </div>
                         </div>
                         <!-- end page title -->
-
+                        <div class="row justify-content-end" >
+                            <form method="get" action="/customers">
+                                <input class="form-control" style="width: 200px; display: inline-block" value="${requestScope.kw}" name="kw" type="text" placeholder="search..." />
+                                <select name="ct" class="form-control" style="width: 200px; display: inline-block" >
+                                    <option value="-1">ALL</option>
+                                    <c:forEach items="${requestScope.customerTypes}" var="cType">
+                                        <option
+                                                <c:if test="${requestScope.ct == cType.getId()}">selected</c:if>
+                                                value="${cType.getId()}">${cType.getName()}</option>
+                                    </c:forEach>
+                                </select>
+                                <button class="btn btn-primary" type="submit" style="width: 100px; display: inline-block">Search</button>
+                            </form>
+                        </div>
                         <div class="row">
                             <c:if test="${requestScope.message == 'delete'}">
                                 <script>
@@ -651,6 +664,35 @@
                             <form id="frmDelete" method="post" action="/customers?action=delete">
                                 <input type="hidden" name="idDelete" value="" id="idDelete">
                             </form>
+                        </div>
+
+                        <div class="row justify-content-end">
+                            <ul class="pagination pagination-split float-right mb-0">
+                                <c:if test="${currentPage != 1}">
+                                    <li class="page-item">
+                                        <a href="/customers?kw=${requestScope.kw}&ct=${requestScope.ct}&page=${currentPage-1}" class="page-link"><i class="fa fa-angle-left"></i></a>
+                                    </li>
+                                </c:if>
+                                <c:forEach begin="1" end="${noOfPages}" var="i">
+                                    <c:choose>
+                                        <c:when test="${currentPage eq i}">
+                                            <li class="page-item active">
+                                                <a href="/customers?kw=${requestScope.kw}&ct=${requestScope.ct}&page=${i}" class="page-link">${i}</a>
+                                            </li>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li class="page-item">
+                                                <a href="/customers?kw=${requestScope.kw}&ct=${requestScope.ct}&page=${i}" class="page-link">${i}</a>
+                                            </li>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:forEach>
+                                <c:if test="${currentPage lt noOfPages}">
+                                    <li class="page-item">
+                                        <a href="/customers?kw=${requestScope.kw}&ct=${requestScope.ct}&page=${currentPage+1}" class="page-link"><i class="fa fa-angle-right"></i></a>
+                                    </li>
+                                </c:if>
+                            </ul>
                         </div>
                         <!-- end row -->
 
