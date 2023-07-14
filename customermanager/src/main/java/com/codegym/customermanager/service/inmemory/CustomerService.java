@@ -61,7 +61,7 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public void createCustomer(Customer customer) {
-        customer.setId((long) (customers.size()+1));
+        customer.setId((long) (customers.size() + 1));
         customers.add(customer);
     }
 }

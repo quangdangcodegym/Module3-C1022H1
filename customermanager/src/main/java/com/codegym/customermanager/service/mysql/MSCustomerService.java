@@ -33,6 +33,7 @@ public class MSCustomerService implements ICustomerService {
         }
         return connection;
     }
+
     @Override
     public List<Customer> getAllCustomer() {
 
@@ -57,7 +58,7 @@ public class MSCustomerService implements ICustomerService {
     }
 
     private Customer getCustomerFromRs(ResultSet rs) throws SQLException {
-        Long id =  rs.getLong("id");
+        Long id = rs.getLong("id");
         String name = rs.getString("name");
         java.sql.Date sqlCreatedAt = rs.getDate("createdat");
         java.util.Date uCreatedAt = new java.util.Date(sqlCreatedAt.getTime());
@@ -85,6 +86,7 @@ public class MSCustomerService implements ICustomerService {
             }
         }
     }
+
     @Override
     public Customer findCustomerById(Long id) {
 

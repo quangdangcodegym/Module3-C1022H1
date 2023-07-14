@@ -8,6 +8,7 @@ import java.util.List;
 
 public class CustomerTypeService implements ICustomerTypeService {
     private List<CustomerType> customerTypes;
+
     @Override
     public List<CustomerType> getAllCustomerTypes() {
         return this.customerTypes;

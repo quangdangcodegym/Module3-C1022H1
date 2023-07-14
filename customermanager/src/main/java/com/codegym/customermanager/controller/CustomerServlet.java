@@ -1,7 +1,6 @@
 package com.codegym.customermanager.controller;
 
 
-
 import com.codegym.customermanager.model.Customer;
 import com.codegym.customermanager.model.CustomerType;
 import com.codegym.customermanager.service.inmemory.CustomerService;
@@ -66,7 +65,6 @@ public class CustomerServlet extends HttpServlet {
         }
 
 
-
 //        resp.sendRedirect("/translate");
     }
 
@@ -77,7 +75,7 @@ public class CustomerServlet extends HttpServlet {
 
         if (customer == null) {
             resp.sendRedirect("/customers?message=edit");
-        }else{
+        } else {
 
             req.setAttribute("customer", customer);
             req.setAttribute("customerTypes", customerTypes);
@@ -142,7 +140,7 @@ public class CustomerServlet extends HttpServlet {
             iCustomerService.editCustomer(customer);
 
             resp.sendRedirect("/customers");
-        }else{
+        } else {
             req.setAttribute("errors", errors);
             req.setAttribute("customer", customer);
             requestDispatcher.forward(req, resp);
@@ -153,7 +151,7 @@ public class CustomerServlet extends HttpServlet {
         for (Part part : req.getParts()) {
             String fileName = extractFileName(part);
             // refines the fileName in case it is an absolute path
-            if(!fileName.equals("")){
+            if (!fileName.equals("")) {
                 Customer customerDB = iCustomerService.findCustomerById(customer.getId());
                 if (!customerDB.getImage().equals(fileName)) {
                     String appRealPath = getServletContext().getRealPath("/") + "images";
@@ -171,7 +169,7 @@ public class CustomerServlet extends HttpServlet {
                     part.write(nameFileProject);
 
                     customer.setImage(fileName);
-                }else{
+                } else {
                     // lay lai anh cu
                     customer.setImage(customerDB.getImage());
                 }
@@ -210,7 +208,7 @@ public class CustomerServlet extends HttpServlet {
             req.setAttribute("message", "Them thanh cong");
             iCustomerService.createCustomer(customer);
             requestDispatcher.forward(req, resp);
-        }else{
+        } else {
             req.setAttribute("errors", errors);
             req.setAttribute("customer", customer);
             requestDispatcher.forward(req, resp);
@@ -218,13 +216,12 @@ public class CustomerServlet extends HttpServlet {
     }
 
 
-
     private void isValidCustomerType(HttpServletRequest req, Customer customer, List<String> errors) {
         try {
             int idCustomerType = Integer.parseInt(req.getParameter("sCustomerType"));
-            if (iCustomerTypeService.getCustomerTypeById(idCustomerType)!=null) {
+            if (iCustomerTypeService.getCustomerTypeById(idCustomerType) != null) {
                 customer.setIdType(idCustomerType);
-            }else{
+            } else {
                 errors.add("Loại khách hàng chưa hợp lệ");
             }
         } catch (NumberFormatException numberFormatException) {
@@ -236,7 +233,7 @@ public class CustomerServlet extends HttpServlet {
         for (Part part : req.getParts()) {
             String fileName = extractFileName(part);
             // refines the fileName in case it is an absolute path
-            if(!fileName.equals("")){
+            if (!fileName.equals("")) {
                 String appRealPath = getServletContext().getRealPath("/") + "images";
                 File file = new File(appRealPath);
                 if (!file.exists()) {
@@ -258,6 +255,7 @@ public class CustomerServlet extends HttpServlet {
         }
 
     }
+
     private String extractFileName(Part part) {
         String contentDisp = part.getHeader("content-disposition");
         String[] items = contentDisp.split(";");
@@ -297,12 +295,12 @@ public class CustomerServlet extends HttpServlet {
         List<CustomerType> customerTypes = iCustomerTypeService.getAllCustomerTypes();
 //        customers.size()
         req.setAttribute("customers", customers);
-        req.setAttribute("customerTypes", customerTypes );
+        req.setAttribute("customerTypes", customerTypes);
 
         String message = req.getParameter("message");
         if (message != null) {
             // delete: success
-            req.setAttribute("message", message );
+            req.setAttribute("message", message);
         }
 
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/customer/customers.jsp");

@@ -15,7 +15,6 @@ public class MSCustomerTypeService implements ICustomerTypeService {
     private String jdbcPassword = "St180729!!";
 
 
-
     protected Connection getConnection() {
         Connection connection = null;
         try {
@@ -30,6 +29,7 @@ public class MSCustomerTypeService implements ICustomerTypeService {
         }
         return connection;
     }
+
     private void printSQLException(SQLException ex) {
         for (Throwable e : ex) {
             if (e instanceof SQLException) {
@@ -45,6 +45,7 @@ public class MSCustomerTypeService implements ICustomerTypeService {
             }
         }
     }
+
     @Override
     public List<CustomerType> getAllCustomerTypes() {
         List<CustomerType> customerTypes = new ArrayList<>();

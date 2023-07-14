@@ -12,13 +12,13 @@
     <title>Title</title>
 </head>
 <body>
-    <h1>Confirm delete</h1>
-    <form method="post">
-        <h1>${requestScope.customer.getName()}</h1>
-        <h1>${requestScope.customer.getAddress()}</h1>
-        <input type="hidden" name="id" value="${requestScope.customer.getId()}">
-        <button >Delete</button>
-    </form>
+<h1>Confirm delete</h1>
+<form method="post">
+    <h1>${requestScope.customer.getName()}</h1>
+    <h1>${requestScope.customer.getAddress()}</h1>
+    <input type="hidden" name="id" value="${requestScope.customer.getId()}">
+    <button>Delete</button>
+</form>
 
 
 </body>
